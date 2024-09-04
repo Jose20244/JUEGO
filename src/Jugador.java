@@ -1,6 +1,6 @@
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Jugador {
     private String nombre;
@@ -45,4 +45,7 @@ public class Jugador {
         return cartas.remove(indiceCarta);
     }
 
+    public void mostrarMano() {
+        System.out.println(nombre + "'s hand: " + cartas + " (Score: " + totalPuntos + ")");
+    }
 }

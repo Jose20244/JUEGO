@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +11,8 @@ public class Juego {
     public Juego(int numeroJugadores, int numeroRondas) {
         this.jugadores = crearJugadores(numeroJugadores);
         this.numeroRondas = numeroRondas;
+        this.cartas = crearBaraja();
+        barajar();
     }
 
     private List<Jugador> crearJugadores(int numeroJugadores) {
@@ -42,53 +43,43 @@ public class Juego {
 
     private void repartirCartas() {
         for (Jugador jugador : jugadores) {
-            for (int i = 0; i < 5; i++) {
-                jugador.agregarCarta(cartas.remove(0));
-            }
+            jugador.agregarCarta(cartas.remove(0));
+            jugador.agregarCarta(cartas.remove(0));
         }
     }
 
     private void mostrarCartas() {
         for (Jugador jugador : jugadores) {
-            System.out.println(jugador.getNombre() + ": " + jugador.getCartas());
+            jugador.mostrarMano();
         }
     }
 
-    private void jugarCarta() {
+    public void jugarBlackjack() {
+        repartirCartas();
+        mostrarCartas();
+
         for (Jugador jugador : jugadores) {
-            Cartas cartaJugando = jugador.jugarCarta();
-            int valorCarta = cartaJugando.getValorNumerico();
-            jugador.sumarPuntos(valorCarta);
-            System.out.println("Jugador " + jugador.getNombre() + " jugó " + cartaJugando + " con valor " + valorCarta +"   " +
-                    "Puntos Ronda: "+ jugador.getTotalPuntos());
-        }
-    }
-
-
-    public void jugar() {
-        for (int ronda = 0; ronda < numeroRondas; ronda++) {
-            System.out.println("Ronda: " + (ronda + 1));
-            this.cartas = crearBaraja();
-            barajar();
-            repartirCartas();
-            mostrarCartas();
-            jugarCarta();
+            while (jugador.getTotalPuntos() < 17) {
+                jugador.agregarCarta(cartas.remove(0));
+                jugador.sumarPuntos(jugador.getCartas().get(jugador.getCartas().size() - 1).getValorNumerico());
+                jugador.mostrarMano();
+            }
         }
 
+        // Determinar el ganador
         Jugador ganador = null;
-        int maxPuntos = 0;
         for (Jugador jugador : jugadores) {
-            System.out.println(jugador.getNombre() + " tiene un total de " + jugador.getTotalPuntos() + " puntos");
-            if (jugador.getTotalPuntos() > maxPuntos) {
-                maxPuntos = jugador.getTotalPuntos();
-                ganador = jugador;
+            if (jugador.getTotalPuntos() <= 21) {
+                if (ganador == null || jugador.getTotalPuntos() > ganador.getTotalPuntos()) {
+                    ganador = jugador;
+                }
             }
         }
 
         if (ganador != null) {
-            System.out.println("El ganador es " + ganador.getNombre() + " con " + maxPuntos + " puntos.");
+            System.out.println("El ganador es: " + ganador.getNombre() + " con " + ganador.getTotalPuntos() + " puntos.");
         } else {
-            System.out.println("Hubo un empate.");
+            System.out.println("Todos los jugadores se pasaron de 21. No hay ganador.");
         }
     }
 }
